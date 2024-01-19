@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "data-collector",
-    "slug": "data-collector",
+    "name": "Road Project",
+    "slug": "Road Project",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,7 +22,7 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.amirj3000.datacollector"
+      "package": "com.amirj3000.roadproject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
