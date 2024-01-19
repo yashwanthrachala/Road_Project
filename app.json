@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Road Project",
-    "slug": "Road Project",
+    "name": "road-project",
+    "slug": "data-collector",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
