@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { Text, View, Button, StyleSheet } from "react-native";
 import * as Location from "expo-location";
-import { Accelerometer } from "expo-sensors";
+import { Accelerometer, Gyroscope } from "expo-sensors";
 import { collection, addDoc } from "firebase/firestore";
 import * as Random from 'expo-crypto';
 
@@ -29,10 +29,12 @@ const styles = StyleSheet.create({
 
 const RoadConditionManager = ({ db }) => {
     const [location, setLocation] = useState(null);
-    const [axes, setAxes] = useState({ x: 0, y: 0, z: 0 });
+    const [accAxes, setAccAxes] = useState({ x: 0, y: 0, z: 0 });
+    const [gyrAxes, setgyrAxes] = useState({ x: 0, y: 0, z: 0 });
     const [data, setData] = useState({});
     const [isStarted, setIsStarted] = useState(false);
     const [sessionId, setSessionId] = useState("");
+    const [currDocs, setCurrDocs] = useState([]);
 
     const doStuff = () => {
         if (!location?.coords) {
@@ -40,54 +42,33 @@ const RoadConditionManager = ({ db }) => {
         }
         const { latitude, longitude, altitude, speed } = location.coords;
         const speedInKMPH = speed * 3.6;
-        const currentTime = new Date();
 
-        // Date and time formatting
-        const dateFormatter = new Intl.DateTimeFormat("en", {
-            year: "numeric",
-            month: "2-digit",
-            day: "2-digit",
-        });
-        const timeFormatter = new Intl.DateTimeFormat("en", {
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-        });
-
-        const formattedDate = dateFormatter.format(currentTime);
-        const formattedTime = timeFormatter.format(currentTime);
-        const formattedDateTime = `${formattedDate} ${formattedTime}`;
-
-        // Getting accelerometer data
-        const accelerometerData = axes;
-        const {
-            x: rotationX,
-            y: rotationY,
-            z: rotationZ,
-        } = accelerometerData || {};
-
-        // Log the data
         const newData = {
-            DATETIME: (new Date()).toISOString(),
-            SPEED: speedInKMPH,
-            ALTITUDE: altitude,
-            LATITUDE: latitude,
-            LONGITUDE: longitude,
-            ROTATION_X: rotationX,
-            ROTATION_Y: rotationY,
-            ROTATION_Z: rotationZ,
-            SESSION_ID: sessionId,
-            VIBRATION: Math.sqrt(rotationX*rotationX + rotationY*rotationY + rotationZ*rotationZ)
+          SESSION_ID: sessionId,
+          DATETIME: new Date().toISOString(),
+          SPEED: speedInKMPH,
+          ALTITUDE: altitude,
+          LATITUDE: latitude,
+          LONGITUDE: longitude,
+          ACCELEROMETER_X: accAxes.x,
+          ACCELEROMETER_Y: accAxes.y,
+          ACCELEROMETER_Z: accAxes.z,
+          GYROSCOPE_X: gyrAxes.x,
+          GYROSCOPE_Y: gyrAxes.y,
+          GYROSCOPE_Z: gyrAxes.z,
         };
         setData(newData);
+        const newCurrDocs = [...currDocs];
+        newCurrDocs.push(currDocs);
+        setCurrDocs(newCurrDocs);
         if (isStarted && !!sessionId) {
-            addDoc(collection(db, "road_data"), newData)
-                .then((docRef) => {
-                    console.log("Document written with ID: ", docRef.id);
-                })
-                .catch((e) => {
-                    console.error("Error adding document: ", e);
-                });
+          addDoc(collection(db, "road_data"), newData)
+              .then((docRef) => {
+                  console.log("Document written with ID: ", docRef.id);
+              })
+              .catch((e) => {
+                  console.error("Error adding document: ", e);
+              });
         }
     };
 
@@ -110,9 +91,12 @@ const RoadConditionManager = ({ db }) => {
     const setupMotionManager = () => {
         Accelerometer.setUpdateInterval(5000);
         Accelerometer.addListener((accelerometerData) => {
-            const { x: newX, y: newY, z: newZ } = accelerometerData;
-            setAxes({ x: newX, y: newY, z: newZ });
+          setAccAxes(accelerometerData);
         });
+        Gyroscope.setUpdateInterval(5000);
+        Gyroscope.addListener((gyroscopeData) => {
+          setgyrAxes(gyroscopeData);
+        })
     };
 
     useEffect(() => {
@@ -121,7 +105,7 @@ const RoadConditionManager = ({ db }) => {
         setupMotionManager();
     }, []);
 
-    useEffect(doStuff, [location, axes]);
+    useEffect(doStuff, [location, accAxes, gyrAxes ]);
 
     return (
       <View style={styles.container}>
