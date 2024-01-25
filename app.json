@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": "Road Project",
-    "slug": "data-collector",
+    "slug": "road-project",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -22,21 +22,22 @@
         "foregroundImage": "./assets/adaptive-icon.png",
         "backgroundColor": "#ffffff"
       },
-      "package": "com.amirj3000.roadproject"
+      "package": "com.yashwanthrachala.roadproject"
     },
     "web": {
       "favicon": "./assets/favicon.png"
     },
     "extra": {
       "eas": {
-        "projectId": "022cc9a0-d13b-4f61-8aee-837b18034686"
+        "projectId": "b3ffe579-35ca-492d-8bfe-550a1efed94d"
       }
     },
     "runtimeVersion": {
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/022cc9a0-d13b-4f61-8aee-837b18034686"
-    }
+      "url": "https://u.expo.dev/b3ffe579-35ca-492d-8bfe-550a1efed94d"
+    },
+    "owner": "yashwanthrachala"
   }
 }
